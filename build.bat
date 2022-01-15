@@ -6,3 +6,4 @@ set "outputPath=%~f0\..\%gameName%.pdx"
 
 call "%playdatePath%\bin\pdc.exe" -sdkpath "%playdatePath%" "%sourcePath%" "%outputPath%"
 call "%playdatePath%\bin\PlaydateSimulator.exe" "%outputPath%"
+exit

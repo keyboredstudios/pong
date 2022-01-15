@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "cmd.exe",
+                "args": ["/d", "/c"]
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "pdc_mac",
+            "command": "${workspaceRoot}/build.sh",
+            "args": [],
+            "type": "shell"
+        },
+        {
+            "label": "pdc_win",
+            "command": "(Taskkill /IM PlaydateSimulator.exe || echo No old process) && start ${workspaceRoot}/build.bat",
+            "args": [],
+            "type": "shell"
+        }
+    ]
+}
