@@ -1,0 +1,7 @@
+name=Pong
+author=kippllo
+description=Pong clone made for the Playdate console.
+bundleID=net.keybored.pong
+version=1.0
+buildNumber=1
+imagePath=images/
