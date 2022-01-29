@@ -2,6 +2,9 @@ import "CoreLibs/graphics"
 import "lib"
 local gfx <const> = playdate.graphics
 
+playdate.display.setRefreshRate(50)
+gfx.setFont(gfx.font.new('/font/font-rains-3x'))
+
 local screenWidth = 400 - 10
 local screenHeight = 240 - 10
 
@@ -34,7 +37,9 @@ function playdate.update()
     gfx.fillRect(ai.x, ai.y, ai.width, ai.height)
 
     -- Score
-    gfx.drawText(player.score .. "|" .. ai.score, 190, 5)
+    gfx.drawTextAligned(player.score, 170, 5, kTextAlignment.center)
+    gfx.drawTextAligned("|", 200, 5, kTextAlignment.center)
+    gfx.drawTextAligned(ai.score, 230, 5, kTextAlignment.center)
 end
 
 function calcPhysics()
