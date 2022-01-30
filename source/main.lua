@@ -172,7 +172,7 @@ function init()
     ai = {}
     ai.x = 380
     ai.y = 240/2
-    ai.difficulty = 0.8 -- Must be between 0 and 1
+    ai.difficulty = 2.0 -- Must be between 0 and pong.speed because ai.difficulty divided by pong.speed must be less than 1.0.
     ai.width = 10
     ai.height = 30
     ai.score = 0
