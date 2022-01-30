@@ -23,3 +23,29 @@ function checkCollision(coll1, coll2)
 
     return xHit and yHit
 end
+
+-- Based on unity's lerp: https://docs.unity3d.com/ScriptReference/Mathf.Lerp.html
+function lerp(a, b, t)
+    return a - (a - b) * t
+end
+--[[ Lerp test:
+    print(lerp(100, 50, 1)) -- 50
+    print(lerp(50, 100, 1)) -- 100
+    print(lerp(-100, 100, 0.5)) -- 0
+    print(lerp(100, -100, 0.5)) -- 0
+    print(lerp(-50, 100, 0.5)) -- 25
+    print(lerp(100, -50, 0.5)) -- 25
+    print(lerp(0, 100, 0.5)) -- 50
+    print(lerp(0, 100, 0.75)) -- 75
+    print(lerp(100, 0, 0.75)) -- 25
+    print(lerp(-100, -0, 0.75)) -- -25
+    print(lerp(0, -100, 0.75)) -- -75
+--]]
+
+function sign(numb)
+    if numb < 0 then
+        return -1
+    else
+        return 1
+    end
+end

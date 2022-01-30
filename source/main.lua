@@ -20,6 +20,7 @@ function playdate.update()
     gfx.fillRect(pong.x, pong.y, pong.width, pong.height)
 
     -- Player
+    player.oldY = player.y
     if playdate.buttonIsPressed('up') and player.y > 0 then
         player.y -= 1 * player.speed
     end
@@ -29,11 +30,9 @@ function playdate.update()
     gfx.fillRect(player.x, player.y, player.width, player.height)
 
     -- AI
-    if ai.y < math.floor(pong.y) - ai.difficulty and ai.y < 240 - ai.height then
-        ai.y += ai.difficulty
-    elseif ai.y > math.floor(pong.y) + ai.difficulty then
-        ai.y -= ai.difficulty
-    end
+    ai.oldY = ai.y
+    ai.y = lerp(ai.y, pong.y, ai.difficulty / pong.speed) -- Divide by the pong's speed so the AI gets worse as the pong speeds up, just like the real player.
+    ai.y = math.min(ai.y, 240 - ai.height) -- Clamp the AI's max height to fit the screen size.
     gfx.fillRect(ai.x, ai.y, ai.width, ai.height)
 
     -- Score
@@ -80,22 +79,31 @@ function calcPhysics()
     local didHit = pong.x >= screenWidth or pong.x <= 0 or pong.y >= screenHeight or pong.y <= 0 or isTouchingPlayer or isTouchingAi
 
     if didHit then
+        -- Each bounce the speed of the ball gets faster.
+        pong.speed += 0.15
+
         if pong.y >= screenHeight then
             pong.yDir = -1
         elseif pong.y <= 0 then
             pong.yDir = 1
         end
 
-        -- if isTouchingPlayer or isTouchingAi then
-        --     pong.xDir *= -1
-        -- end
-
         if isTouchingPlayer then
+            local hitDir = player.y - player.oldY
             pong.xDir = 1
+
+            if hitDir ~= 0 then
+                pong.yDir = sign(hitDir)
+            end
         end
 
         if isTouchingAi then
+            local hitDir = ai.y - ai.oldY
             pong.xDir = -1
+
+            if hitDir ~= 0 then
+                pong.yDir = sign(hitDir)
+            end
         end
 
         -- 45°
@@ -153,19 +161,21 @@ function init()
     -- Reset Player
     player = {}
     player.x = 10
-    player.y = 0
-    player.speed = 2
+    player.y = 240/2
+    player.speed = 5
     player.width = 10
     player.height = 30
     player.score = 0
+    player.oldY = 0
 
     -- Reset AI
     ai = {}
     ai.x = 380
     ai.y = 240/2
-    ai.difficulty = 1.3 --1.3 --1.2
+    ai.difficulty = 0.8 -- Must be between 0 and 1
     ai.width = 10
     ai.height = 30
     ai.score = 0
+    ai.oldY = 0
 end
 init()
