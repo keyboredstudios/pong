@@ -49,3 +49,24 @@ function sign(numb)
         return 1
     end
 end
+
+-- Based on unity's clamp: https://docs.unity3d.com/ScriptReference/Mathf.Clamp.html
+function clamp(value, min, max)
+    return math.max(math.min(value, max), min)
+end
+--[[ clamp test:
+    print(clamp(3, 5, 10)) -- 5
+    print(clamp(12, 5, 10)) -- 10
+    print(clamp(7, 5, 10)) -- 7
+    print(clamp(-4, -16, -1)) -- -4
+    print(clamp(-17, -16, -1)) -- -16
+    print(clamp(-0, -16, -1)) -- -1
+--]]
+
+function inRange(value, min, max)
+    return value >= min and value <= max
+end
+
+function flipACoin()
+    return sign(math.random(-1, 0)) -- Can be -1 or 0 (So a 50/50 chance).
+end

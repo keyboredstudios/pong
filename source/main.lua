@@ -31,8 +31,13 @@ function playdate.update()
 
     -- AI
     ai.oldY = ai.y
-    ai.y = lerp(ai.y, pong.y, ai.difficulty / pong.speed) -- Divide by the pong's speed so the AI gets worse as the pong speeds up, just like the real player.
-    ai.y = math.min(ai.y, 240 - ai.height) -- Clamp the AI's max height to fit the screen size.
+    
+    -- This just makes the target offset changes smoother visually.
+    ai.targetOffset = lerp(ai.targetOffset, ai.newTargetOffset, 0.1)
+
+    local target = (pong.y + pong.height/2) - ai.height/2 + ai.targetOffset
+    ai.y = lerp(ai.y, target, ai.difficulty / pong.speed) -- Divide by the pong's speed so the AI gets worse as the pong speeds up, just like the real player.
+    ai.y = clamp(ai.y, 0, 240 - ai.height) -- Clamp the AI's y position to fit the screen size.
     gfx.fillRect(ai.x, ai.y, ai.width, ai.height)
 
     -- Score
@@ -104,6 +109,10 @@ function calcPhysics()
             if hitDir ~= 0 then
                 pong.yDir = sign(hitDir)
             end
+
+            -- Reset the AI target position:
+            -- This is a hacky to make the the transition between AI offsets smooth. Fix this better later...
+            ai.newTargetOffset = math.random(5, 10) * flipACoin()
         end
 
         -- 45°
@@ -126,16 +135,31 @@ function calcPhysics()
             pong.forceDir = 7 * math.pi / 4
         end
 
+        local pongCenter = (pong.y + pong.height/2)
+        local playerCenter = player.y + (player.height / 2)
+        local aiCenter = ai.y + (ai.height / 2)
+        local hitCenterPlayer = inRange(pongCenter, playerCenter - 5, playerCenter + 5) 
+        local hitCenterAi = inRange(pongCenter, aiCenter - 5, aiCenter + 5)
+        if hitCenterPlayer and isTouchingPlayer then
+            pong.forceDir = 0
+        elseif hitCenterAi and isTouchingAi then
+            pong.forceDir = math.pi
+        end
+
         -- 0° & 180°
         -- Check to update score if the pong hit a goal.
         if pong.x >= screenWidth then
             player.score += 1
             resetPong()
+
+            -- Serve towards the AI.
             pong.forceDir = 0
             pong.xDir = 1
         elseif pong.x <= 0 then
             ai.score += 1
             resetPong()
+            
+            -- Serve towards the Player.
             pong.forceDir = math.pi
             pong.xDir = -1
         end
@@ -149,7 +173,7 @@ function resetPong()
     pong.width = 10
     pong.height = 10
     pong.forceDir = 0
-    pong.speed = 2
+    pong.speed = 3
     pong.xDir = 1
     pong.yDir = 1
 end
@@ -160,22 +184,24 @@ function init()
 
     -- Reset Player
     player = {}
-    player.x = 10
-    player.y = 240/2
-    player.speed = 5
     player.width = 10
     player.height = 30
+    player.x = 10
+    player.y = 240/2 - player.height/2
+    player.speed = 5
     player.score = 0
     player.oldY = 0
 
     -- Reset AI
     ai = {}
-    ai.x = 380
-    ai.y = 240/2
-    ai.difficulty = 2.0 -- Must be between 0 and pong.speed because ai.difficulty divided by pong.speed must be less than 1.0.
     ai.width = 10
     ai.height = 30
+    ai.x = 380
+    ai.y = 0
+    ai.difficulty = pong.speed -- Must be between 0 and pong.speed because ai.difficulty divided by pong.speed must be less than 1.0.
     ai.score = 0
     ai.oldY = 0
+    ai.targetOffset = 0
+    ai.newTargetOffset = 0
 end
 init()
