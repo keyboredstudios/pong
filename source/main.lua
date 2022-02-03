@@ -36,7 +36,7 @@ function playdate.update()
     ai.targetOffset = lerp(ai.targetOffset, ai.newTargetOffset, 0.1)
 
     local target = (pong.y + pong.height/2) - ai.height/2 + ai.targetOffset
-    ai.y = lerp(ai.y, target, ai.difficulty / pong.speed) -- Divide by the pong's speed so the AI gets worse as the pong speeds up, just like the real player.
+    ai.y = lerp(ai.y, target, ai.difficulty / ai.lerpOffset) -- Divide by the pong's speed so the AI gets worse as the pong speeds up, just like the real player.
     ai.y = clamp(ai.y, 0, 240 - ai.height) -- Clamp the AI's y position to fit the screen size.
     gfx.fillRect(ai.x, ai.y, ai.width, ai.height)
 
@@ -112,7 +112,10 @@ function calcPhysics()
 
             -- Reset the AI target position:
             -- This is a hacky to make the the transition between AI offsets smooth. Fix this better later...
-            ai.newTargetOffset = math.random(5, 10) * flipACoin()
+            ai.newTargetOffset = math.random(5, 13) * flipACoin() -- Start by fixing this to be a bit more drastic. Maybe?
+
+            -- ADD NOTE HERE...
+            ai.lerpOffset = pong.speed + clamp(math.random(), 0, 0.5) -- random between returns between 0-0.5
         end
 
         -- 45°
@@ -138,8 +141,8 @@ function calcPhysics()
         local pongCenter = (pong.y + pong.height/2)
         local playerCenter = player.y + (player.height / 2)
         local aiCenter = ai.y + (ai.height / 2)
-        local hitCenterPlayer = inRange(pongCenter, playerCenter - 5, playerCenter + 5) 
-        local hitCenterAi = inRange(pongCenter, aiCenter - 5, aiCenter + 5)
+        local hitCenterPlayer = inRange(pongCenter, playerCenter - 2, playerCenter + 2) --  Maybe use a smaller number than 5 here.
+        local hitCenterAi = inRange(pongCenter, aiCenter - 2, aiCenter + 2)
         if hitCenterPlayer and isTouchingPlayer then
             pong.forceDir = 0
         elseif hitCenterAi and isTouchingAi then
@@ -174,6 +177,7 @@ function resetPong()
     pong.height = 10
     pong.forceDir = 0
     pong.speed = 3
+    pong.defaultSpeed = pong.speed
     pong.xDir = 1
     pong.yDir = 1
 end
@@ -198,10 +202,11 @@ function init()
     ai.height = 30
     ai.x = 380
     ai.y = 0
-    ai.difficulty = pong.speed -- Must be between 0 and pong.speed because ai.difficulty divided by pong.speed must be less than 1.0.
+    ai.difficulty = pong.speed * 0.95 -- Try something like `pong.speed * 0.9` -- Must be between 0 and pong.speed because ai.difficulty divided by pong.speed must be less than 1.0.
     ai.score = 0
     ai.oldY = 0
     ai.targetOffset = 0
     ai.newTargetOffset = 0
+    ai.lerpOffset = pong.speed
 end
 init()
