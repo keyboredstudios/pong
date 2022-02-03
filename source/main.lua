@@ -21,12 +21,18 @@ function playdate.update()
 
     -- Player
     player.oldY = player.y
-    if playdate.buttonIsPressed('up') and player.y > 0 then
+    if playdate.buttonIsPressed('up') then
         player.y -= 1 * player.speed
+        player.speed += player.speedIncrease
     end
-    if playdate.buttonIsPressed('down') and player.y + player.height < 240 then
+    if playdate.buttonIsPressed('down') then
         player.y += 1 * player.speed
+        player.speed += player.speedIncrease
     end
+    if playdate.buttonJustReleased('up') or playdate.buttonJustReleased('down') then
+        player.speed = player.defaultSpeed
+    end
+    player.y = clamp(player.y, 0, 240 - player.height)
     gfx.fillRect(player.x, player.y, player.width, player.height)
 
     -- AI
@@ -192,9 +198,11 @@ function init()
     player.height = 30
     player.x = 10
     player.y = 240/2 - player.height/2
-    player.speed = 5
+    player.speed = 3.5
     player.score = 0
     player.oldY = 0
+    player.defaultSpeed = player.speed
+    player.speedIncrease = 0.5
 
     -- Reset AI
     ai = {}
