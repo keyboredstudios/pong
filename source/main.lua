@@ -32,6 +32,7 @@ function playdate.update()
     if playdate.buttonJustReleased('up') or playdate.buttonJustReleased('down') then
         player.speed = player.defaultSpeed
     end
+    player.speed = clamp(player.speed, player.defaultSpeed, player.maxSpeed)
     player.y = clamp(player.y, 0, 240 - player.height)
     gfx.fillRect(player.x, player.y, player.width, player.height)
 
@@ -202,6 +203,7 @@ function init()
     player.score = 0
     player.oldY = 0
     player.defaultSpeed = player.speed
+    player.maxSpeed = 12
     player.speedIncrease = 0.5
 
     -- Reset AI
