@@ -1,5 +1,6 @@
 import "CoreLibs/graphics"
 import "lib"
+import "sound"
 local gfx <const> = playdate.graphics
 
 playdate.display.setRefreshRate(50)
@@ -95,12 +96,16 @@ function calcPhysics()
         pong.speed += 0.15
 
         if pong.y >= screenHeight then
+            playBounceSound()
             pong.yDir = -1
         elseif pong.y <= 0 then
+            playBounceSound()
             pong.yDir = 1
         end
 
         if isTouchingPlayer then
+            playHitSound()
+
             local hitDir = player.y - player.oldY
             pong.xDir = 1
 
@@ -110,6 +115,8 @@ function calcPhysics()
         end
 
         if isTouchingAi then
+            playHitSound()
+
             local hitDir = ai.y - ai.oldY
             pong.xDir = -1
 
@@ -159,6 +166,7 @@ function calcPhysics()
         -- 0° & 180°
         -- Check to update score if the pong hit a goal.
         if pong.x >= screenWidth then
+            playPointSound()
             player.score += 1
             resetPong()
 
@@ -166,6 +174,7 @@ function calcPhysics()
             pong.forceDir = 0
             pong.xDir = 1
         elseif pong.x <= 0 then
+            playPointSound()
             ai.score += 1
             resetPong()
             
