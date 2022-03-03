@@ -104,7 +104,7 @@ function calcPhysics()
         end
 
         if isTouchingPlayer then
-            playHitSound()
+            playBounceSound()
 
             local hitDir = player.y - player.oldY
             pong.xDir = 1
@@ -115,7 +115,7 @@ function calcPhysics()
         end
 
         if isTouchingAi then
-            playHitSound()
+            playBounceSound()
 
             local hitDir = ai.y - ai.oldY
             pong.xDir = -1
